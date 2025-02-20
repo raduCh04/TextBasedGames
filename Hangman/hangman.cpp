@@ -5,6 +5,63 @@
 #include <unordered_set>
 #include <vector>
 
+const std::vector<std::string> HANGMAN_STAGES = {
+    "  +---+\n"
+    "  |   |\n"
+    "      |\n"
+    "      |\n"
+    "      |\n"
+    "      |\n"
+    "=========",
+
+    "  +---+\n"
+    "  |   |\n"
+    "  O   |\n"
+    "      |\n"
+    "      |\n"
+    "      |\n"
+    "=========",
+
+    "  +---+\n"
+    "  |   |\n"
+    "  O   |\n"
+    "  |   |\n"
+    "      |\n"
+    "      |\n"
+    "=========",
+
+    "  +---+\n"
+    "  |   |\n"
+    "  O   |\n"
+    " /|   |\n"
+    "      |\n"
+    "      |\n"
+    "=========",
+
+    "  +---+\n"
+    "  |   |\n"
+    "  O   |\n"
+    " /|\\  |\n"
+    "      |\n"
+    "      |\n"
+    "=========",
+
+    "  +---+\n"
+    "  |   |\n"
+    "  O   |\n"
+    " /|\\  |\n"
+    " /    |\n"
+    "      |\n"
+    "=========",
+
+    "  +---+\n"
+    "  |   |\n"
+    "  O   |\n"
+    " /|\\  |\n"
+    " / \\  |\n"
+    "      |\n"
+    "=========\nGAME OVER!"};
+
 static bool is_number(const std::string &s)
 {
     return std::all_of(s.begin(), s.end(), isdigit);
@@ -17,10 +74,9 @@ static char toLower(char c)
 
 static std::string getWord()
 {
-
-    std::vector<std::string> easyWords = {"apple", "dog", "fish", "house", "tree"};
-    std::vector<std::string> mediumWords = {"elephant", "giraffe", "mountain", "computer", "sunflower"};
-    std::vector<std::string> hardWords = {"encyclopedia", "philosophy", "sophisticated", "astronaut", "chrysanthemum"};
+    std::vector<std::string> easy_words = {"apple", "dog", "fish", "house", "tree"};
+    std::vector<std::string> medium_words = {"elephant", "giraffe", "mountain", "computer", "sunflower"};
+    std::vector<std::string> hard_words = {"encyclopedia", "philosophy", "sophisticated", "astronaut", "chrysanthemum"};
 
     int choice = -1;
     std::cout << "Choose difficulty level:\n1 - Easy\n2 - Medium\n3 - Hard\nEnter choice: ";
@@ -35,13 +91,13 @@ static std::string getWord()
     switch (choice)
     {
     case 1:
-        words = easyWords;
+        words = easy_words;
         break;
     case 2:
-        words = mediumWords;
+        words = medium_words;
         break;
     case 3:
-        words = hardWords;
+        words = hard_words;
         break;
     }
 
@@ -49,20 +105,33 @@ static std::string getWord()
     return words[std::rand() % words.size()];
 }
 
-static void playGame(const std::string &word, int maxTries)
+static void displayHangman(int max_tries, int remaining_tries)
+{
+    int total_stages = HANGMAN_STAGES.size();
+
+    int stage_index = (max_tries - remaining_tries) * (total_stages - 1) / max_tries;
+
+    stage_index = std::min(stage_index, total_stages - 1);
+
+    std::cout << HANGMAN_STAGES[stage_index] << std::endl;
+}
+
+static void playGame(const std::string &word, int max_tries)
 {
     int guessed = 0;
+    int remaining_tries = max_tries;
     std::string final_word = "";
     for (int i = 0; i < word.length(); i++)
     {
         final_word += "_ ";
     }
-    std::cout << final_word << std::endl;
 
-    std::unordered_set<char> guessedLetters;
+    std::unordered_set<char> guessed_letters;
     while (true)
     {
-        if (maxTries <= 0)
+        std::cout << final_word << std::endl;
+        displayHangman(max_tries, remaining_tries);
+        if (max_tries <= 0)
         {
             std::cout << "You lost!" << std::endl;
             break;
@@ -84,8 +153,8 @@ static void playGame(const std::string &word, int maxTries)
         }
 
         int encounters = 0;
-        bool isInWord = false;
-        if (guessedLetters.find(letter) == guessedLetters.end())
+        bool is_in_word = false;
+        if (guessed_letters.find(letter) == guessed_letters.end())
         {
             for (int i = 0; i < word.length(); i += 1)
             {
@@ -93,7 +162,7 @@ static void playGame(const std::string &word, int maxTries)
                 {
                     final_word[i * 2] = letter;
                     encounters++;
-                    isInWord = true;
+                    is_in_word = true;
                 }
             }
         }
@@ -103,20 +172,18 @@ static void playGame(const std::string &word, int maxTries)
             continue;
         }
 
-        guessedLetters.insert(letter);
+        guessed_letters.insert(letter);
 
-        if (isInWord)
+        if (is_in_word)
         {
             guessed += encounters;
             std::cout << "Right!" << std::endl;
         }
         else
         {
-            maxTries--;
+            remaining_tries--;
             std::cout << "False!" << std::endl;
         }
-
-        std::cout << final_word << std::endl;
     }
 }
 
