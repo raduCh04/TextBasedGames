@@ -1,33 +1,55 @@
 #include <iostream>
 #include <string>
+#include <algorithm>
+#include <limits>
+#include <vector>
+#include <unordered_set>
+
+static bool is_number(const std::string &s)
+{
+    for (char c : s)
+    {
+        if (std::isdigit(c) == false)
+            return false;
+    }
+    return true;
+}
 
 int main(int argc, char const *argv[])
 {
-    std::string word = "";
-    std::string final_word = "";
     int tries = 0;
-    int guessed = 0;
-    bool won = false;
-
-    if (argc > 2)
+    std::cout << "Enter maximum number of tries: ";
+    std::cin >> tries;
+    while (!(std::cin >> tries))
     {
-        tries = atoi(argv[1]);
-        word = argv[2];
-    }
-    else
-    {
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::cout << "Not a number! Try again." << std::endl;
         std::cout << "Enter maximum number of tries: ";
         std::cin >> tries;
+    }
+
+    std::string word = "";
+    std::cout << "Enter word to guess: ";
+    std::cin >> word;
+    while (is_number(word))
+    {
+        std::cout << "Word cannot include numbers! Try again.";
         std::cout << "Enter word to guess: ";
         std::cin >> word;
     }
 
+    for (char &c : word)
+        c = tolower(c);
+
+    std::string final_word = "";
     for (int i = 0; i < word.length(); i++)
     {
         final_word += "_ ";
     }
     std::cout << final_word << std::endl;
 
+    int guessed = 0;
     while (true)
     {
         if (tries <= 0)
@@ -41,32 +63,41 @@ int main(int argc, char const *argv[])
             break;
         }
 
-        char letter = 0;
-        std::cout << "Enter letter: ";
-        std::cin >> letter;
-
-        int index = 0;
-        bool isInWord = false;
-        for (int i = 0; i < word.length(); i += 1)
         {
-            if (word[i] == letter)
+            char letter = 0;
+            std::cout << "Enter letter: ";
+            std::cin >> letter;
+            while (std::isdigit(letter))
             {
-                final_word[i * 2] = letter;
-                isInWord = true;
+                std::cout << "No number allowed! Try again." << std::endl;
+                std::cout << "Enter letter: ";
+                std::cin >> letter;
             }
-        }
 
-        if (isInWord)
-        {
-            guessed++;
-            std::cout << "Right!" << std::endl;
+            int encounters = 0;
+            bool isInWord = false;
+            for (int i = 0; i < word.length(); i += 1)
+            {
+                if (word[i] == letter)
+                {
+                    final_word[i * 2] = letter;
+                    encounters++;
+                    isInWord = true;
+                }
+            }
+
+            if (isInWord)
+            {
+                guessed += encounters;
+                std::cout << "Right!" << std::endl;
+            }
+            else
+            {
+                tries--;
+                std::cout << "False!" << std::endl;
+            }
+            std::cout << "Tries left: " << tries << std::endl;
+            std::cout << final_word << std::endl;
         }
-        else
-        {
-            tries--;
-            std::cout << "False!" << std::endl;
-        }
-        std::cout << "Tries left: " << tries << std::endl;
-        std::cout << final_word << std::endl;
     }
 }
