@@ -3,8 +3,11 @@
 This repository contains a variety of classic text-based games implemented in C++. The goal is to build fun and interactive games while improving programming skills, focusing on clean code, algorithms, and game logic.
 
 ## Games Included  
-### Hangman  
+### Number Guessing
 ### Tic-Tac-Toe
+### Hangman  
+
+
 
 ## Features
   - Difficulty levels

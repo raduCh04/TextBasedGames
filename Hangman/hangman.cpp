@@ -67,11 +67,6 @@ static bool is_number(const std::string &s)
     return std::all_of(s.begin(), s.end(), isdigit);
 }
 
-static char toLower(char c)
-{
-    return (char)std::tolower((unsigned char)c); // Prevent errors with no ASCII characters
-}
-
 static std::string getWord()
 {
     std::vector<std::string> easy_words = {"apple", "dog", "fish", "house", "tree"};
@@ -101,8 +96,8 @@ static std::string getWord()
         break;
     }
 
-    std::srand((unsigned int)time(nullptr));
-    return words[std::rand() % words.size()];
+    srand((unsigned int)time(nullptr));
+    return words[rand() % words.size()];
 }
 
 static void displayHangman(int max_tries, int remaining_tries)
